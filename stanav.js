@@ -1,25 +1,30 @@
 /* ============================================================================
-   STA GLOBAL NAV  —  sta-nav.js
+   STA GLOBAL NAV  —  stanav.js
+   ScaleThroughAutomation · one navbar for every GoHighLevel page
    ----------------------------------------------------------------------------
-   HOW TO USE
-     1. Host this file somewhere public. GoHighLevel's Media Library does not
-        accept .js, so use one of these (all free):
-          • GitHub Pages   -> https://<you>.github.io/<repo>/sta-nav.js
-          • jsDelivr       -> https://cdn.jsdelivr.net/gh/<you>/<repo>@main/sta-nav.js
-          • Cloudflare Pages / Netlify -> drag the folder in
-     2. In GHL: Sites -> your funnel/website -> Settings -> Custom Code ->
-        Footer Code, paste this ONE line (swap in your real URL):
+   THIS FILE IS LIVE AT
+     https://pamux.github.io/sta-nav/stanav.js
 
-          <script src="https://YOUR-HOST/sta-nav.js" defer></script>
+   TO INSTALL ON A FUNNEL / WEBSITE
+     GHL -> Sites -> (your funnel or website) -> Settings -> Custom Code ->
+     Footer Code, and paste this one line:
 
-     3. Done. Every page in that funnel gets the navbar. To change the menu,
-        edit the CONFIG block below in this file and re-save it. Every page on
-        every funnel pointing at this URL updates at once.
+       <script src="https://pamux.github.io/sta-nav/stanav.js" defer></script>
 
-   NOTE ON CACHING
-     If you use jsDelivr with @main it can cache for up to 12 hours. While you
-     are still editing, either use GitHub Pages (updates in about a minute) or
-     add a version to the URL: .../sta-nav.js?v=2  and bump the number.
+     Save, then hard-refresh a live page (Ctrl/Cmd + Shift + R).
+     Repeat on each funnel. They all read this same file.
+
+   TO CHANGE THE MENU
+     Open stanav.js on GitHub -> pencil icon -> edit the CONFIG block below ->
+     Commit. Live on every page in about a minute. GitHub Pages caches for ten
+     minutes at most; if a change seems slow, hard-refresh.
+
+   WHAT IT DOES ON ITS OWN
+     • highlights the current page's tab, and its parent dropdown
+     • hides a page's own hard-coded navbar so two bars never stack
+     • adds top spacing so content clears the fixed bar (see pushContent)
+     • mobile drawer, tap-to-expand dropdowns, Esc to close
+     • namespaced #staNav / stn-* so it cannot clash with GHL styles
 ============================================================================ */
 (function () {
   /* run once, even if the loader tag ends up on the page twice */
@@ -66,8 +71,8 @@
     },
 
     ctas: [
-      { label: 'Book a Call', href: 'https://calendly.com/wilton-scalethroughautomation/ai-conversation', style: 'primary', newTab: true },
-      { label: 'Contact',     href: 'https://scalethroughautomation.io/contact',                          style: 'ghost',   newTab: false }
+      { label: 'Book a Call', href: 'https://staai.scalethroughautomation.io/widget/bookings/ai-conversation-wwilton-rogers', style: 'primary', newTab: true },
+      { label: 'Contact',     href: 'https://scalethroughautomation.io/contact',                                            style: 'ghost',   newTab: true  }
     ],
 
     menu: [
@@ -116,8 +121,9 @@
       },
       {
         label: 'AI Employees',
+        href: 'https://www.scalethroughautomation.io/ai-employee-package',   // parent tab is clickable
         items: [
-          { label: 'AI Employee Package',   href: 'https://scalethroughautomation.io/ai-employee-package/' },
+          { label: 'All AI Employees', href: 'https://www.scalethroughautomation.io/ai-employee-package', feature: true },
           { label: 'AI Voice Rep',          href: 'https://scalethroughautomation.io/ai-voice-rep/' },
           { label: 'AI Chat Rep',           href: 'https://scalethroughautomation.io/ai-chat-rep/' },
           { label: 'AI Operations Assistant', href: 'https://scalethroughautomation.io/ai-operations-assistant/' },
@@ -146,6 +152,23 @@
     ]
   };
   /* ============================ END OF EDIT AREA =========================== */
+
+
+  /* --------------------------------------------------------------------------
+     Per-page overrides. A single page can adjust any CONFIG key by setting this
+     BEFORE the loader tag. Useful when a page's hero is already built to sit
+     under a fixed bar and must not be pushed down a second time:
+
+       <script>window.STA_NAV_OPTIONS = { pushContent: false };</script>
+       <script src="https://pamux.github.io/sta-nav/stanav.js" defer></script>
+     -------------------------------------------------------------------------- */
+  if (window.STA_NAV_OPTIONS) {
+    for (var ovr in window.STA_NAV_OPTIONS) {
+      if (Object.prototype.hasOwnProperty.call(window.STA_NAV_OPTIONS, ovr)) {
+        CONFIG[ovr] = window.STA_NAV_OPTIONS[ovr];
+      }
+    }
+  }
 
 
   /* ---- helpers ---------------------------------------------------------- */
@@ -177,6 +200,7 @@
     var a = el('a', null, item.label);
     a.href = item.href;
     if (item.newTab) { a.target = '_blank'; a.rel = 'noopener'; }
+    if (item.feature) a.classList.add('stn-feature');
     if (item.href && isHere(item.href)) a.classList.add('stn-active');
     return a;
   }
@@ -219,8 +243,10 @@
 
     li.className = 'stn-has-drop';
 
-    var btn = el('button');
-    btn.type = 'button';
+    // a parent with an href is a real link on desktop; without one it is a button
+    var btn = entry.href ? el('a') : el('button');
+    if (entry.href) { btn.href = entry.href; if (isHere(entry.href)) btn.classList.add('stn-active'); }
+    else { btn.type = 'button'; }
     btn.setAttribute('aria-haspopup', 'true');
     btn.setAttribute('aria-expanded', 'false');
     btn.appendChild(document.createTextNode(entry.label));
@@ -310,7 +336,7 @@
 
 
   /* ---- behaviour -------------------------------------------------------- */
-  function isMobile() { return window.matchMedia('(max-width: 1100px)').matches; }
+  function isMobile() { return window.matchMedia('(max-width: 1024px)').matches; }
 
   function openMenu() {
     nav.classList.add('stn-open');
@@ -323,7 +349,7 @@
     document.body.style.overflow = '';
     Array.prototype.forEach.call(nav.querySelectorAll('.stn-expanded'), function (li) {
       li.classList.remove('stn-expanded');
-      var b = li.querySelector('button');
+      var b = li.querySelector(':scope > a, :scope > button');
       if (b) b.setAttribute('aria-expanded', 'false');
     });
   }
@@ -334,7 +360,7 @@
   backdrop.addEventListener('click', closeMenu);
 
   // dropdown headers: hover opens them on desktop, tapping opens them on mobile
-  Array.prototype.forEach.call(nav.querySelectorAll('.stn-has-drop > button'), function (btn) {
+  Array.prototype.forEach.call(nav.querySelectorAll('.stn-has-drop > a, .stn-has-drop > button'), function (btn) {
     btn.addEventListener('click', function (e) {
       if (!isMobile()) return;
       e.preventDefault();
@@ -343,7 +369,7 @@
       Array.prototype.forEach.call(nav.querySelectorAll('.stn-has-drop'), function (o) {
         if (o !== li) {
           o.classList.remove('stn-expanded');
-          var ob = o.querySelector('button');
+          var ob = o.querySelector(':scope > a, :scope > button');
           if (ob) ob.setAttribute('aria-expanded', 'false');
         }
       });
@@ -354,6 +380,7 @@
 
   // tapping any real link closes the drawer
   Array.prototype.forEach.call(nav.querySelectorAll('a'), function (a) {
+    if (a.parentElement && a.parentElement.classList.contains('stn-has-drop')) return;
     a.addEventListener('click', function () { if (isMobile()) closeMenu(); });
   });
 
@@ -456,6 +483,14 @@ function STYLES() { return `
   transition: background .2s ease, color .2s ease;
 }
 #staNav .stn-drop a:hover { background: rgba(255,75,43,.12); color: var(--stn-orange); }
+/* "All AI Employees" overview row, above the individual employees */
+#staNav .stn-drop a.stn-feature {
+  color: var(--stn-orange); font-weight: 800;
+  margin-bottom: .35rem; padding-bottom: .6rem;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px 10px 0 0;
+}
+#staNav .stn-drop a.stn-feature:hover { background: rgba(255,75,43,.16); }
 #staNav .stn-drop a.stn-active { background: rgba(255,75,43,.16); color: var(--stn-orange); }
 
 #staNav .stn-drop.stn-mega { display: flex; gap: 1.4rem; padding: 1rem 1.2rem; min-width: max-content; }
@@ -499,19 +534,20 @@ function STYLES() { return `
 #staNavSpacer { height: var(--stn-height, 88px); width: 100%; flex: none; }
 
 /* ---------- mobile ---------- */
-@media (max-width: 1100px) {
+@media (max-width: 1024px) {
   #staNav { display: grid; grid-template-columns: 1fr auto; justify-content: space-between; }
   #staNav .stn-actions { display: none; }
   #staNav .stn-logo { justify-self: start; }
 
   #staNav .stn-links {
     position: fixed; top: 0; right: 0; bottom: 0;
-    width: min(88vw, 380px);
+    width: min(84vw, 360px);
     flex-direction: column; align-items: stretch; gap: 0;
-    padding: 6rem 1.4rem 2.4rem;
-    background: #0b0b0b;
-    border-left: 1px solid rgba(255,255,255,.08);
-    box-shadow: -20px 0 60px rgba(0,0,0,.7);
+    padding: 5.5rem 1.4rem 2rem;
+    background: rgba(8,8,8,.98);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-left: 1px solid rgba(255,43,43,.22);
+    box-shadow: -20px 0 60px rgba(0,0,0,.6);
     overflow-y: auto;
     transform: translateX(100%);
     transition: transform .35s cubic-bezier(.16,1,.3,1);
@@ -525,6 +561,7 @@ function STYLES() { return `
     display: flex; justify-content: space-between; width: 100%;
     padding: .95rem .4rem; border-radius: 10px; font-size: 1.02rem; text-align: left;
   }
+  #staNav .stn-links .stn-has-drop.stn-expanded > a .stn-caret,
   #staNav .stn-links .stn-has-drop.stn-expanded > button .stn-caret { transform: rotate(180deg); }
   #staNav .stn-caret { transition: transform .3s ease; }
 
@@ -571,6 +608,8 @@ function STYLES() { return `
 @media (max-width: 560px) {
   #staNav { padding: 1rem 1.25rem; }
   #staNav .stn-logo img { height: 36px; }
+  /* only the primary CTA survives on the narrowest screens */
+  #staNav .stn-actions .stn-ghost { display: none; }
 }
 `; }
 })();
