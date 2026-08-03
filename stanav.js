@@ -71,8 +71,9 @@
     },
 
     ctas: [
-      { label: 'Book a Call', href: 'https://staai.scalethroughautomation.io/widget/bookings/ai-conversation-wwilton-rogers', style: 'primary', newTab: true },
-      { label: 'Contact',     href: 'https://scalethroughautomation.io/contact',                                            style: 'ghost',   newTab: true  }
+      // points at our own booking page, which embeds the GHL calendar
+      { label: 'Book a Call', href: 'https://www.scalethroughautomation.io/calendar', style: 'primary', newTab: false },
+      { label: 'Contact',     href: 'https://scalethroughautomation.io/contact',      style: 'ghost',   newTab: true  }
     ],
 
     menu: [
