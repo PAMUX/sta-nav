@@ -1,6 +1,6 @@
 /*!
  * Buford Roofing & Construction - Google Reviews slider
- * v1.1.0
+ * v1.2.0
  *
  * USAGE
  *   <div data-buford-reviews></div>
@@ -16,6 +16,7 @@
  * WHAT IT SHOWS
  *   Real 5-star Google reviews for Buford Roofing & Construction Inc, shuffled on every page load,
  *   sliding left to right on their own (arrows, dots and swipe also work).
+ *   "Read more" opens the full review in a popup.
  *
  * KEEPING REVIEWS UP TO DATE
  *   Option A (automatic): create a Review Widget in HighLevel (Reputation > Widgets, source Google),
@@ -160,7 +161,6 @@
     ".brv-star{width:24px;height:24px;fill:#fbbc04}",
     ".brv-verified{width:21px;height:21px;margin-left:7px}",
     ".brv-text{margin:0;font-size:16.5px;line-height:1.6;color:#1f1f1f;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}",
-    ".brv-card.open .brv-text{-webkit-line-clamp:unset;display:block}",
     ".brv-more{align-self:flex-start;background:none;border:0;padding:0;margin-top:14px;font:inherit;font-size:15px;color:#70757a;cursor:pointer}",
     ".brv-more:hover{color:#1f1f1f;text-decoration:underline}",
     ".brv-more[hidden]{display:none}",
@@ -179,6 +179,32 @@
     ".brv-arrow svg{width:20px;height:20px}",
     ".brv-attr{font-size:12px;opacity:.7;display:flex;align-items:center;gap:6px}",
     ".brv-attr svg{width:14px;height:14px}",
+    /* popup */
+    ".brv-modal{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:20px;font-family:'Poppins','Plus Jakarta Sans',sans-serif;visibility:hidden;opacity:0;transition:opacity .25s,visibility 0s .25s}",
+    ".brv-modal.is-open{visibility:visible;opacity:1;transition:opacity .25s,visibility 0s}",
+    ".brv-modal *,.brv-modal *::before,.brv-modal *::after{box-sizing:border-box}",
+    ".brv-modal-backdrop{position:absolute;inset:0;background:rgba(8,20,42,.72);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}",
+    ".brv-modal-card{position:relative;width:min(640px,100%);max-height:min(86vh,760px);display:flex;flex-direction:column;background:#fff;color:#1f1f1f;border-radius:18px;padding:30px 32px 22px;box-shadow:0 40px 90px -30px rgba(0,0,0,.6);transform:translateY(16px) scale(.97);transition:transform .3s cubic-bezier(.22,.8,.22,1)}",
+    ".brv-modal.is-open .brv-modal-card{transform:none}",
+    ".brv-modal-close{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;border:0;background:#f1f3f4;color:#1f1f1f;font-size:26px;line-height:1;cursor:pointer;display:grid;place-items:center;transition:background .2s}",
+    ".brv-modal-close:hover{background:#e3e6e8}",
+    ".brv-modal .brv-top{padding-right:48px}",
+    ".brv-modal .brv-av{width:56px;height:56px;font-size:25px}",
+    ".brv-modal .brv-who b{font-size:20px;white-space:normal}",
+    ".brv-modal .brv-rate{margin:18px 0 14px}",
+    ".brv-modal-body{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}",
+    ".brv-modal-body .brv-top,.brv-modal-body .brv-rate{flex-shrink:0}",
+    ".brv-modal-text{flex:1 1 auto;min-height:0;overflow-y:auto;font-size:17px;line-height:1.7;color:#1f1f1f;padding-right:6px;white-space:pre-line;overscroll-behavior:contain}",
+    ".brv-modal-foot{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid #e8eaed;flex-wrap:wrap}",
+    ".brv-modal-nav{display:flex;align-items:center;gap:10px;font-size:14px;color:#70757a}",
+    ".brv-modal-nav button{width:38px;height:38px;border-radius:50%;border:1px solid #dadce0;background:#fff;color:#1f1f1f;cursor:pointer;display:grid;place-items:center;transition:background .2s,border-color .2s}",
+    ".brv-modal-nav button:hover{background:#f1f3f4;border-color:#c4c7c5}",
+    ".brv-modal-nav svg{width:18px;height:18px}",
+    ".brv-modal-link{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:#1a73e8;text-decoration:none}",
+    ".brv-modal-link:hover{text-decoration:underline}",
+    ".brv-modal-link svg{width:18px;height:18px}",
+    ".brv-modal button:focus-visible,.brv-modal a:focus-visible,.brv-more:focus-visible{outline:2px solid #1a73e8;outline-offset:2px}",
+    "@media(max-width:640px){.brv-modal{padding:14px}.brv-modal-card{padding:24px 20px 18px;max-height:88vh}.brv-modal-text{font-size:16px}}",
     ".brv-ghl{background:#fff;border-radius:18px;padding:12px;min-height:200px}",
     ".brv-ghl iframe{width:100%;border:0;display:block}",
     "@media(max-width:1000px){.brv-slide{--brv-per:2}}",
@@ -213,15 +239,23 @@
     return out;
   }
 
-  function cardHTML(r) {
+  function topHTML(r, idSuffix) {
     var name = titleCase(r.name);
-    return '<div class="brv-slide"><article class="brv-card" aria-label="Review by ' + esc(name) + '">' +
+    return '<div class="brv-top"><div class="brv-av" style="background:' + avatarColor(name) + '" aria-hidden="true">' + esc(name.charAt(0)) + '</div>' +
+      '<div class="brv-who"><b' + (idSuffix ? ' id="brv-m-name' + idSuffix + '"' : '') + '>' + esc(name) + '</b><span>' + esc(ago(r.date)) + '</span></div>' +
+      '<span class="brv-src" title="Posted on Google">' + GOOGLE_G + '</span></div>' +
+      '<div class="brv-rate" aria-label="' + (r.rating || 5) + ' out of 5 stars">' + starsHTML(r.rating || 5) + VERIFIED + '</div>';
+  }
+
+  function cardHTML(r, i) {
+    var name = titleCase(r.name);
+    return '<div class="brv-slide"><article class="brv-card" data-i="' + i + '" aria-label="Review by ' + esc(name) + '">' +
       '<div class="brv-top"><div class="brv-av" style="background:' + avatarColor(name) + '" aria-hidden="true">' + esc(name.charAt(0)) + '</div>' +
       '<div class="brv-who"><b>' + esc(name) + '</b><span>' + esc(ago(r.date)) + '</span></div>' +
       '<span class="brv-src" title="Posted on Google">' + GOOGLE_G + '</span></div>' +
       '<div class="brv-rate" aria-label="' + (r.rating || 5) + ' out of 5 stars">' + starsHTML(r.rating || 5) + VERIFIED + '</div>' +
       '<p class="brv-text">' + esc(r.text) + '</p>' +
-      '<button class="brv-more" type="button" hidden>Read more</button>' +
+      '<button class="brv-more" type="button" aria-haspopup="dialog" hidden>Read more</button>' +
       '</article></div>';
   }
 
@@ -272,7 +306,7 @@
 
     // Three copies of the list so the slider can loop forever in both directions
     var loop = n > 1;
-    var cards = list.map(cardHTML).join("");
+    var cards = list.map(function (r, i) { return cardHTML(r, i); }).join("");
     var trackHTML = loop ? cards + cards + cards : cards;
 
     sec.innerHTML = '<div class="brv-container">' + headHTML(host) +
@@ -335,7 +369,7 @@
     function markLong() {
       sec.querySelectorAll(".brv-card").forEach(function (c) {
         var p = c.querySelector(".brv-text"), b = c.querySelector(".brv-more");
-        if (!c.classList.contains("open")) b.hidden = p.scrollHeight <= p.clientHeight + 2;
+        b.hidden = p.scrollHeight <= p.clientHeight + 2;
       });
     }
 
@@ -347,17 +381,74 @@
       var target = Number(d.getAttribute("data-i"));
       go(loop ? n + target : target); start();
     });
+    /* ---------- popup with the full review ---------- */
+    var uid = Math.random().toString(36).slice(2, 7);
+    var modal = document.createElement("div");
+    modal.className = "brv-modal";
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.setAttribute("aria-labelledby", "brv-m-name" + uid);
+    modal.setAttribute("aria-hidden", "true");
+    modal.innerHTML = '<div class="brv-modal-backdrop" data-close></div>' +
+      '<div class="brv-modal-card"><button class="brv-modal-close" type="button" aria-label="Close review" data-close>&times;</button>' +
+      '<div class="brv-modal-body"></div>' +
+      '<div class="brv-modal-foot"><div class="brv-modal-nav"><button type="button" data-step="-1" aria-label="Previous review">' + ARROW_L + '</button>' +
+      '<span class="brv-modal-count"></span><button type="button" data-step="1" aria-label="Next review">' + ARROW_R + '</button></div>' +
+      '<a class="brv-modal-link" href="' + esc(SITE.googleUrl) + '" target="_blank" rel="noopener">' + GOOGLE_G + 'See all reviews on Google</a></div></div>';
+    document.body.appendChild(modal);
+    var mBody = modal.querySelector(".brv-modal-body"), mCount = modal.querySelector(".brv-modal-count"), mClose = modal.querySelector(".brv-modal-close");
+    var mIndex = 0, lastFocus = null, isOpen = false, hover = false;
+
+    function fill(i) {
+      mIndex = ((i % n) + n) % n;
+      var r = list[mIndex];
+      mBody.innerHTML = topHTML(r, uid) + '<div class="brv-modal-text">' + esc(r.text) + '</div>';
+      mCount.textContent = (mIndex + 1) + " of " + n;
+    }
+    function openModal(i, trigger) {
+      lastFocus = trigger || document.activeElement;
+      fill(i);
+      isOpen = true; paused = true;
+      modal.classList.add("is-open");
+      modal.setAttribute("aria-hidden", "false");
+      document.documentElement.style.overflow = "hidden";
+      mClose.focus({ preventScroll: true });
+      setTimeout(function () { if (isOpen && !modal.contains(document.activeElement)) mClose.focus({ preventScroll: true }); }, 60);
+    }
+    function closeModal() {
+      if (!isOpen) return;
+      isOpen = false;
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden", "true");
+      document.documentElement.style.overflow = "";
+      paused = hover;
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+    modal.addEventListener("click", function (e) {
+      if (e.target.closest("[data-close]")) { closeModal(); return; }
+      var st = e.target.closest("[data-step]");
+      if (st) fill(mIndex + Number(st.getAttribute("data-step")));
+    });
+    document.addEventListener("keydown", function (e) {
+      if (!isOpen) return;
+      if (e.key === "Escape") { closeModal(); return; }
+      if (e.key === "ArrowRight") fill(mIndex + 1);
+      if (e.key === "ArrowLeft") fill(mIndex - 1);
+      if (e.key === "Tab") {
+        var f = modal.querySelectorAll("button, a[href]"), first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
+
     sec.addEventListener("click", function (e) {
       var b = e.target.closest(".brv-more"); if (!b) return;
-      var c = b.closest(".brv-card");
-      var open = c.classList.toggle("open");
-      b.textContent = open ? "Show less" : "Read more";
-      paused = open || !!sec.querySelector(".brv-card.open");
+      openModal(Number(b.closest(".brv-card").getAttribute("data-i")), b);
     });
-    sec.addEventListener("mouseenter", function () { paused = true; });
-    sec.addEventListener("mouseleave", function () { if (!sec.querySelector(".brv-card.open")) paused = false; });
+    sec.addEventListener("mouseenter", function () { hover = true; paused = true; });
+    sec.addEventListener("mouseleave", function () { hover = false; if (!isOpen) paused = false; });
     sec.addEventListener("focusin", function () { paused = true; });
-    sec.addEventListener("focusout", function () { if (!sec.querySelector(".brv-card.open")) paused = false; });
+    sec.addEventListener("focusout", function () { if (!isOpen && !hover) paused = false; });
 
     var x0 = null;
     track.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; paused = true; }, { passive: true });
