@@ -1,6 +1,6 @@
 /*!
  * Buford Roofing & Construction - Site Navigation (top bar + header + mobile menu)
- * v1.2.0
+ * v1.3.0
  *
  * USAGE
  *   <div id="buford-nav"></div>
@@ -50,6 +50,7 @@
       projects: SITE_URL + "/recent-projects",
       careers: SITE_URL + "/apply",
       privacy: SITE_URL + "/privacy-policy",
+      terms: SITE_URL + "/terms-and-conditions",
       locations: SITE_URL + "/#locations",
 
       residential: SITE_URL + "/residential-roofing",

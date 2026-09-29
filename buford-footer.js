@@ -1,6 +1,6 @@
 /*!
  * Buford Roofing & Construction - Site Footer
- * v1.2.0
+ * v1.3.0
  *
  * USAGE
  *   <div id="buford-footer"></div>
@@ -49,6 +49,7 @@
       projects: SITE_URL + "/recent-projects",
       careers: SITE_URL + "/apply",
       privacy: SITE_URL + "/privacy-policy",
+      terms: SITE_URL + "/terms-and-conditions",
 
       residential: SITE_URL + "/residential-roofing",
       commercial: SITE_URL + "/commercial-roofing",
@@ -93,7 +94,7 @@
   ];
   var COMPANY = [
     ["About Us", "about"], ["Gallery", "gallery"], ["Recent Projects", "projects"],
-    ["Free Estimate", "estimate"], ["Careers", "careers"], ["Contact", "contact"], ["Privacy Policy", "privacy"]
+    ["Free Estimate", "estimate"], ["Careers", "careers"], ["Contact", "contact"], ["Privacy Policy", "privacy"], ["Terms and Conditions", "terms"]
   ];
 
   /* ================= HELPERS ================= */
