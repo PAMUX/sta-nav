@@ -1,6 +1,6 @@
 /*!
  * Buford Roofing & Construction - Site Navigation (top bar + header + mobile menu)
- * v1.0.0
+ * v1.2.0
  *
  * USAGE
  *   <div id="buford-nav"></div>
@@ -14,8 +14,12 @@
  *
  * LINKS
  *   Edit SITE.links below, or override on any page BEFORE this script loads:
- *   <script>window.BufordSiteConfig = { links: { home: "/", contact: "/contact" } };</script>
+ *   <script>window.BufordSiteConfig = { links: { contact: "https://new-website-preview.bufordroofing.com/contact" } };</script>
  *   The same window.BufordSiteConfig is read by buford-footer.js.
+ *
+ *   Any link on the page can follow this config too: add data-buford-link="<key>" to an <a>,
+ *   e.g. <a href="/free-estimate" data-buford-link="estimate">Request a Free Quote</a>,
+ *   and its href is set from SITE.links when the page loads.
  */
 (function () {
   "use strict";
@@ -23,7 +27,8 @@
   window.__bufordNavLoaded = true;
 
   /* ================= CONFIG ================= */
-  var GHL = "https://staai.scalethroughautomation.io/preview/";
+  // Site address. When the site moves to bufordroofing.com, change this one line.
+  var SITE_URL = "https://new-website-preview.bufordroofing.com";
   var SITE = {
     logo: "https://bufordroofing.com/wp-content/uploads/2025/12/Buford-Roofing.png",
     logoAlt: "Buford Roofing & Construction",
@@ -36,36 +41,37 @@
     ctaText: "Free Estimate",
     mobileCtaText: "Get a Free Estimate",
     links: {
-      home: GHL + "WmEduBBAOuFAGT2EOf8c",
-      services: GHL + "MVhWF4MbW9FqLENHYSjp",
-      about: GHL + "Wagp4GXHeu0tkpGyHpr2",
-      gallery: GHL + "nvJzANpXEmjZDrnoK2d0",
-      contact: GHL + "vXBs3fjDxfMHf1rtFhXs",
-      projects: "recent-projects.html",
-      careers: "apply.html",
-      privacy: "privacy-policy.html",
-      locations: GHL + "WmEduBBAOuFAGT2EOf8c#locations",
+      home: SITE_URL + "/",
+      services: SITE_URL + "/services",
+      about: SITE_URL + "/about-us",
+      gallery: SITE_URL + "/gallery",
+      contact: SITE_URL + "/contact",
+      estimate: SITE_URL + "/free-estimate",
+      projects: SITE_URL + "/recent-projects",
+      careers: SITE_URL + "/apply",
+      privacy: SITE_URL + "/privacy-policy",
+      locations: SITE_URL + "/#locations",
 
-      residential: "residential-roofing.html",
-      commercial: "commercial-roofing.html",
-      repair: "roof-repair-restoration.html",
-      replacement: "roof-replacement.html",
-      siding: "siding.html",
-      financing: "roofing-financing.html",
-      gutters: "gutters.html",
+      residential: SITE_URL + "/residential-roofing",
+      commercial: SITE_URL + "/commercial-roofing",
+      repair: SITE_URL + "/roof-repair-restoration",
+      replacement: SITE_URL + "/roof-replacement",
+      siding: SITE_URL + "/siding",
+      financing: SITE_URL + "/roofing-financing",
+      gutters: SITE_URL + "/gutters",
 
-      colleyville: "roofing-colleyville-tx.html",
-      coppell: "roofing-coppell-tx.html",
-      flowerMound: "roofing-flower-mound-tx.html",
-      fortWorth: "roofing-fort-worth-tx.html",
-      grapevine: "roofing-grapevine-tx.html",
-      highlandPark: "roofing-highland-park-tx.html",
-      keller: "roofing-keller-tx.html",
-      roanoke: "roofing-roanoke-tx.html",
-      southlake: "roofing-southlake-tx.html",
-      trophyClub: "roofing-trophy-club-tx.html",
-      universityPark: "roofing-university-park-tx.html",
-      westlake: "roofing-westlake-tx.html"
+      colleyville: SITE_URL + "/roofing-colleyville-tx",
+      coppell: SITE_URL + "/roofing-coppell-tx",
+      flowerMound: SITE_URL + "/roofing-flower-mound-tx",
+      fortWorth: SITE_URL + "/roofing-fort-worth-tx",
+      grapevine: SITE_URL + "/roofing-grapevine-tx",
+      highlandPark: SITE_URL + "/roofing-highland-park-tx",
+      keller: SITE_URL + "/roofing-keller-tx",
+      roanoke: SITE_URL + "/roofing-roanoke-tx",
+      southlake: SITE_URL + "/roofing-southlake-tx",
+      trophyClub: SITE_URL + "/roofing-trophy-club-tx",
+      universityPark: SITE_URL + "/roofing-university-park-tx",
+      westlake: SITE_URL + "/roofing-westlake-tx"
     }
   };
 
@@ -211,14 +217,15 @@
   /* ================= MARKUP ================= */
   function activeKey(host) {
     var forced = host && host.getAttribute("data-active");
-    if (forced) return { top: forced.toLowerCase(), item: null };
     var here = norm(location.href);
     function match(list) {
       for (var i = 0; i < list.length; i++) if (L[list[i][1]] && norm(L[list[i][1]]) === here) return list[i][1];
       return null;
     }
-    var s = match(SERVICES); if (s) return { top: "services", item: s };
-    var l = match(LOCATIONS); if (l) return { top: "locations", item: l };
+    var s = match(SERVICES), l = match(LOCATIONS);
+    if (forced) return { top: forced.toLowerCase(), item: s || l || null };
+    if (s) return { top: "services", item: s };
+    if (l) return { top: "locations", item: l };
     var tops = ["home", "services", "about", "gallery", "contact"];
     for (var i = 0; i < tops.length; i++) if (L[tops[i]] && norm(L[tops[i]]) === here) return { top: tops[i], item: tops[i] };
     return { top: null, item: null };
@@ -267,7 +274,7 @@
           '</ul>' +
           '<div class="bnav-cta">' +
             '<a class="bnav-phone" href="' + esc(SITE.tel) + '">' + ICON.phone + esc(SITE.phone) + '</a>' +
-            '<a class="bnav-btn" href="' + url("contact") + '">' + esc(SITE.ctaText) + '</a>' +
+            '<a class="bnav-btn" href="' + url("estimate") + '">' + esc(SITE.ctaText) + '</a>' +
             '<button class="bnav-burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="bnav-drawer"><span></span><span></span><span></span></button>' +
           '</div>' +
         '</nav></header>' +
@@ -279,7 +286,7 @@
         '<details' + (act.top === "services" ? " open" : "") + '><summary>Services ' + ICON.chev + '</summary>' + plainLinks(SERVICES, act) + '<a href="' + url("services") + '">View All Services</a></details>' +
         '<details' + (act.top === "locations" ? " open" : "") + '><summary>Locations ' + ICON.chev + '</summary>' + plainLinks(LOCATIONS, act) + '</details>' +
         '<details><summary>Company ' + ICON.chev + '</summary>' + plainLinks(COMPANY, act) + '</details>' +
-        '<a class="bnav-btn" href="' + url("contact") + '">' + esc(SITE.mobileCtaText) + '</a>' +
+        '<a class="bnav-btn" href="' + url("estimate") + '">' + esc(SITE.mobileCtaText) + '</a>' +
         '<a class="bnav-m-phone" href="' + esc(SITE.tel) + '">' + ICON.phone + esc(SITE.phone) + '</a>' +
       '</aside>';
   }
@@ -351,6 +358,31 @@
     var syncPhone = function () { smPhone.style.display = mq.matches ? "inline-flex" : "none"; };
     if (mq.addEventListener) mq.addEventListener("change", syncPhone); else mq.addListener(syncPhone);
     syncPhone();
+
+    // Point page links marked with data-buford-link="<key>" at the configured URL
+    document.querySelectorAll("a[data-buford-link]").forEach(function (a) {
+      var k = a.getAttribute("data-buford-link");
+      if (L[k]) a.setAttribute("href", L[k] + (a.getAttribute("data-buford-hash") || ""));
+    });
+
+    // Fix old links on pages pasted before the move to SITE_URL:
+    // "roof-replacement.html#x" -> SITE_URL + "/roof-replacement#x", and old GHL preview links -> their page.
+    var OLD_PREVIEW = {
+      VoljWGdehRq3wPsfUi4U: "home", WmEduBBAOuFAGT2EOf8c: "home", MVhWF4MbW9FqLENHYSjp: "services", Wagp4GXHeu0tkpGyHpr2: "about",
+      nvJzANpXEmjZDrnoK2d0: "gallery", vXBs3fjDxfMHf1rtFhXs: "contact"
+    };
+    document.querySelectorAll("a[href]").forEach(function (a) {
+      if (a.hasAttribute("data-buford-link")) return;
+      var h = a.getAttribute("href"), m;
+      if ((m = h.match(/^(?:\.\/)?([a-z0-9-]+)\.html?(#.*)?$/i))) {
+        var slug = m[1].toLowerCase();
+        a.setAttribute("href", SITE_URL + (slug === "home" || slug === "index" ? "/" : "/" + slug) + (m[2] || ""));
+      } else if ((m = h.match(/scalethroughautomation\.io\/preview\/([A-Za-z0-9]+)(#.*)?$/)) && OLD_PREVIEW[m[1]]) {
+        var base = L[OLD_PREVIEW[m[1]]] || "";
+        if (m[2]) base = base.replace(/#.*$/, "") + m[2];
+        a.setAttribute("href", base);
+      }
+    });
 
     window.BufordNav = { open: openNav, close: closeNav, config: SITE };
   }

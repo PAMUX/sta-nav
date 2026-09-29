@@ -1,6 +1,6 @@
 /*!
  * Buford Roofing & Construction - Site Footer
- * v1.0.0
+ * v1.2.0
  *
  * USAGE
  *   <div id="buford-footer"></div>
@@ -10,7 +10,7 @@
  *
  * LINKS
  *   Edit SITE.links below, or override on any page BEFORE this script loads:
- *   <script>window.BufordSiteConfig = { links: { home: "/", contact: "/contact" } };</script>
+ *   <script>window.BufordSiteConfig = { links: { contact: "https://new-website-preview.bufordroofing.com/contact" } };</script>
  *   The same window.BufordSiteConfig is read by buford-nav.js.
  */
 (function () {
@@ -19,7 +19,8 @@
   window.__bufordFooterLoaded = true;
 
   /* ================= CONFIG ================= */
-  var GHL = "https://staai.scalethroughautomation.io/preview/";
+  // Site address. When the site moves to bufordroofing.com, change this one line.
+  var SITE_URL = "https://new-website-preview.bufordroofing.com";
   var SITE = {
     logo: "https://bufordroofing.com/wp-content/uploads/2025/12/Buford-Roofing.png",
     logoAlt: "Buford Roofing & Construction",
@@ -39,35 +40,36 @@
       nextdoor: "https://nextdoor.com/pages/buford-roofing-construction-grapevine-tx"
     },
     links: {
-      home: GHL + "WmEduBBAOuFAGT2EOf8c",
-      services: GHL + "MVhWF4MbW9FqLENHYSjp",
-      about: GHL + "Wagp4GXHeu0tkpGyHpr2",
-      gallery: GHL + "nvJzANpXEmjZDrnoK2d0",
-      contact: GHL + "vXBs3fjDxfMHf1rtFhXs",
-      projects: "recent-projects.html",
-      careers: "apply.html",
-      privacy: "privacy-policy.html",
+      home: SITE_URL + "/",
+      services: SITE_URL + "/services",
+      about: SITE_URL + "/about-us",
+      gallery: SITE_URL + "/gallery",
+      contact: SITE_URL + "/contact",
+      estimate: SITE_URL + "/free-estimate",
+      projects: SITE_URL + "/recent-projects",
+      careers: SITE_URL + "/apply",
+      privacy: SITE_URL + "/privacy-policy",
 
-      residential: "residential-roofing.html",
-      commercial: "commercial-roofing.html",
-      repair: "roof-repair-restoration.html",
-      replacement: "roof-replacement.html",
-      siding: "siding.html",
-      financing: "roofing-financing.html",
-      gutters: "gutters.html",
+      residential: SITE_URL + "/residential-roofing",
+      commercial: SITE_URL + "/commercial-roofing",
+      repair: SITE_URL + "/roof-repair-restoration",
+      replacement: SITE_URL + "/roof-replacement",
+      siding: SITE_URL + "/siding",
+      financing: SITE_URL + "/roofing-financing",
+      gutters: SITE_URL + "/gutters",
 
-      colleyville: "roofing-colleyville-tx.html",
-      coppell: "roofing-coppell-tx.html",
-      flowerMound: "roofing-flower-mound-tx.html",
-      fortWorth: "roofing-fort-worth-tx.html",
-      grapevine: "roofing-grapevine-tx.html",
-      highlandPark: "roofing-highland-park-tx.html",
-      keller: "roofing-keller-tx.html",
-      roanoke: "roofing-roanoke-tx.html",
-      southlake: "roofing-southlake-tx.html",
-      trophyClub: "roofing-trophy-club-tx.html",
-      universityPark: "roofing-university-park-tx.html",
-      westlake: "roofing-westlake-tx.html"
+      colleyville: SITE_URL + "/roofing-colleyville-tx",
+      coppell: SITE_URL + "/roofing-coppell-tx",
+      flowerMound: SITE_URL + "/roofing-flower-mound-tx",
+      fortWorth: SITE_URL + "/roofing-fort-worth-tx",
+      grapevine: SITE_URL + "/roofing-grapevine-tx",
+      highlandPark: SITE_URL + "/roofing-highland-park-tx",
+      keller: SITE_URL + "/roofing-keller-tx",
+      roanoke: SITE_URL + "/roofing-roanoke-tx",
+      southlake: SITE_URL + "/roofing-southlake-tx",
+      trophyClub: SITE_URL + "/roofing-trophy-club-tx",
+      universityPark: SITE_URL + "/roofing-university-park-tx",
+      westlake: SITE_URL + "/roofing-westlake-tx"
     }
   };
 
@@ -91,7 +93,7 @@
   ];
   var COMPANY = [
     ["About Us", "about"], ["Gallery", "gallery"], ["Recent Projects", "projects"],
-    ["Careers", "careers"], ["Contact", "contact"], ["Privacy Policy", "privacy"]
+    ["Free Estimate", "estimate"], ["Careers", "careers"], ["Contact", "contact"], ["Privacy Policy", "privacy"]
   ];
 
   /* ================= HELPERS ================= */

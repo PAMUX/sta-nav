@@ -31,7 +31,7 @@
   /* ================= CONFIG ================= */
   var PLACE_ID = "ChIJ6bkDnT4rTIYRVImtQShY7bQ"; // Buford Roofing & Construction, Inc on Google
   var SITE = {
-    rating: 4.8,
+    rating: 4.9,
     ratingCount: null, // e.g. 250 to show "Based on 250 reviews"
     googleUrl: "https://search.google.com/local/reviews?placeid=" + PLACE_ID,
     writeReviewUrl: "https://search.google.com/local/writereview?placeid=" + PLACE_ID,
