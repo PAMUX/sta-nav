@@ -22,7 +22,7 @@
   // Site address. When the site moves to bufordroofing.com, change this one line.
   var SITE_URL = "https://new-website-preview.bufordroofing.com";
   var SITE = {
-    logo: "https://bufordroofing.com/wp-content/uploads/2025/12/Buford-Roofing.png",
+    logo: "https://assets.cdn.filesafe.space/v8vGGqFshriKbi0nNLZt/media/6abc0fa917104c529a723029.png",
     logoAlt: "Buford Roofing & Construction",
     about: "Family-owned, faith-based roofing and general contracting serving the Dallas-Fort Worth Metroplex since 2005. GAF Master Elite Certified and BBB A+ Accredited.",
     phone: "(817) 329-7663",

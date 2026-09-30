@@ -30,7 +30,7 @@
   // Site address. When the site moves to bufordroofing.com, change this one line.
   var SITE_URL = "https://new-website-preview.bufordroofing.com";
   var SITE = {
-    logo: "https://bufordroofing.com/wp-content/uploads/2025/12/Buford-Roofing.png",
+    logo: "https://assets.cdn.filesafe.space/v8vGGqFshriKbi0nNLZt/media/6abc0fa917104c529a723029.png",
     logoAlt: "Buford Roofing & Construction",
     phone: "(817) 329-7663",
     tel: "tel:817-329-7663",
