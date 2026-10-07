@@ -1,6 +1,6 @@
 /*!
  * Buford Roofing & Construction - Site Footer
- * v1.3.0
+ * v1.4.0 (live domain bufordroofing.com)
  *
  * USAGE
  *   <div id="buford-footer"></div>
@@ -10,7 +10,7 @@
  *
  * LINKS
  *   Edit SITE.links below, or override on any page BEFORE this script loads:
- *   <script>window.BufordSiteConfig = { links: { contact: "https://new-website-preview.bufordroofing.com/contact" } };</script>
+ *   <script>window.BufordSiteConfig = { links: { contact: "https://bufordroofing.com/contact" } };</script>
  *   The same window.BufordSiteConfig is read by buford-nav.js.
  */
 (function () {
@@ -19,8 +19,8 @@
   window.__bufordFooterLoaded = true;
 
   /* ================= CONFIG ================= */
-  // Site address. When the site moves to bufordroofing.com, change this one line.
-  var SITE_URL = "https://new-website-preview.bufordroofing.com";
+  // Site address. Live site. The new home page sits at /home while the root still serves the old site.
+  var SITE_URL = "https://bufordroofing.com";
   var SITE = {
     logo: "https://assets.cdn.filesafe.space/v8vGGqFshriKbi0nNLZt/media/6abc0fa917104c529a723029.png",
     logoAlt: "Buford Roofing & Construction",
@@ -40,7 +40,7 @@
       nextdoor: "https://nextdoor.com/pages/buford-roofing-construction-grapevine-tx"
     },
     links: {
-      home: SITE_URL + "/",
+      home: SITE_URL + "/home",
       services: SITE_URL + "/services",
       about: SITE_URL + "/about-us",
       gallery: SITE_URL + "/gallery",

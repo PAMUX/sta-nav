@@ -1,6 +1,6 @@
 /*!
  * Buford Roofing & Construction - Site Navigation (top bar + header + mobile menu)
- * v1.3.0
+ * v1.4.0 (live domain bufordroofing.com)
  *
  * USAGE
  *   <div id="buford-nav"></div>
@@ -14,7 +14,7 @@
  *
  * LINKS
  *   Edit SITE.links below, or override on any page BEFORE this script loads:
- *   <script>window.BufordSiteConfig = { links: { contact: "https://new-website-preview.bufordroofing.com/contact" } };</script>
+ *   <script>window.BufordSiteConfig = { links: { contact: "https://bufordroofing.com/contact" } };</script>
  *   The same window.BufordSiteConfig is read by buford-footer.js.
  *
  *   Any link on the page can follow this config too: add data-buford-link="<key>" to an <a>,
@@ -27,8 +27,8 @@
   window.__bufordNavLoaded = true;
 
   /* ================= CONFIG ================= */
-  // Site address. When the site moves to bufordroofing.com, change this one line.
-  var SITE_URL = "https://new-website-preview.bufordroofing.com";
+  // Site address. Live site. The new home page sits at /home while the root still serves the old site.
+  var SITE_URL = "https://bufordroofing.com";
   var SITE = {
     logo: "https://assets.cdn.filesafe.space/v8vGGqFshriKbi0nNLZt/media/6abc0fa917104c529a723029.png",
     logoAlt: "Buford Roofing & Construction",
@@ -41,7 +41,7 @@
     ctaText: "Free Estimate",
     mobileCtaText: "Get a Free Estimate",
     links: {
-      home: SITE_URL + "/",
+      home: SITE_URL + "/home",
       services: SITE_URL + "/services",
       about: SITE_URL + "/about-us",
       gallery: SITE_URL + "/gallery",
@@ -51,7 +51,7 @@
       careers: SITE_URL + "/apply",
       privacy: SITE_URL + "/privacy-policy",
       terms: SITE_URL + "/terms-and-conditions",
-      locations: SITE_URL + "/#locations",
+      locations: SITE_URL + "/home#locations",
 
       residential: SITE_URL + "/residential-roofing",
       commercial: SITE_URL + "/commercial-roofing",
@@ -367,7 +367,8 @@
     });
 
     // Fix old links on pages pasted before the move to SITE_URL:
-    // "roof-replacement.html#x" -> SITE_URL + "/roof-replacement#x", and old GHL preview links -> their page.
+    // "roof-replacement.html#x" -> SITE_URL + "/roof-replacement#x", old preview-domain links -> the live
+    // domain, and old GHL preview links -> their page.
     var OLD_PREVIEW = {
       VoljWGdehRq3wPsfUi4U: "home", WmEduBBAOuFAGT2EOf8c: "home", MVhWF4MbW9FqLENHYSjp: "services", Wagp4GXHeu0tkpGyHpr2: "about",
       nvJzANpXEmjZDrnoK2d0: "gallery", vXBs3fjDxfMHf1rtFhXs: "contact"
@@ -377,7 +378,12 @@
       var h = a.getAttribute("href"), m;
       if ((m = h.match(/^(?:\.\/)?([a-z0-9-]+)\.html?(#.*)?$/i))) {
         var slug = m[1].toLowerCase();
-        a.setAttribute("href", SITE_URL + (slug === "home" || slug === "index" ? "/" : "/" + slug) + (m[2] || ""));
+        if (slug === "home" || slug === "index") a.setAttribute("href", L.home + (m[2] || ""));
+        else a.setAttribute("href", SITE_URL + "/" + slug + (m[2] || ""));
+      } else if (/^https?:\/\/new-website-preview\.bufordroofing\.com/i.test(h)) {
+        var rest = h.replace(/^https?:\/\/new-website-preview\.bufordroofing\.com/i, "");
+        if (rest === "" || rest === "/" || /^\/(?:#|\?)/.test(rest)) rest = "/home" + rest.replace(/^\//, "");
+        a.setAttribute("href", SITE_URL + (rest.charAt(0) === "/" ? rest : "/" + rest));
       } else if ((m = h.match(/scalethroughautomation\.io\/preview\/([A-Za-z0-9]+)(#.*)?$/)) && OLD_PREVIEW[m[1]]) {
         var base = L[OLD_PREVIEW[m[1]]] || "";
         if (m[2]) base = base.replace(/#.*$/, "") + m[2];
