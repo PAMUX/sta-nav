@@ -27,7 +27,7 @@
   window.__bufordNavLoaded = true;
 
   /* ================= CONFIG ================= */
-  // Site address. Live site. The new home page sits at /home while the root still serves the old site.
+  // Site address. Live site. The home page is served at the root ("/").
   var SITE_URL = "https://bufordroofing.com";
   var SITE = {
     logo: "https://assets.cdn.filesafe.space/v8vGGqFshriKbi0nNLZt/media/6abc0fa917104c529a723029.png",
@@ -41,7 +41,7 @@
     ctaText: "Free Estimate",
     mobileCtaText: "Get a Free Estimate",
     links: {
-      home: SITE_URL + "/home",
+      home: SITE_URL + "/",
       services: SITE_URL + "/services",
       about: SITE_URL + "/about-us",
       gallery: SITE_URL + "/gallery",
@@ -51,7 +51,7 @@
       careers: SITE_URL + "/apply",
       privacy: SITE_URL + "/privacy-policy",
       terms: SITE_URL + "/terms-and-conditions",
-      locations: SITE_URL + "/home#locations",
+      locations: SITE_URL + "/#locations",
 
       residential: SITE_URL + "/residential-roofing",
       commercial: SITE_URL + "/commercial-roofing",
@@ -382,7 +382,7 @@
         else a.setAttribute("href", SITE_URL + "/" + slug + (m[2] || ""));
       } else if (/^https?:\/\/new-website-preview\.bufordroofing\.com/i.test(h)) {
         var rest = h.replace(/^https?:\/\/new-website-preview\.bufordroofing\.com/i, "");
-        if (rest === "" || rest === "/" || /^\/(?:#|\?)/.test(rest)) rest = "/home" + rest.replace(/^\//, "");
+        if (rest === "" || rest === "/" || /^\/(?:#|\?)/.test(rest)) rest = "/" + rest.replace(/^\//, "");
         a.setAttribute("href", SITE_URL + (rest.charAt(0) === "/" ? rest : "/" + rest));
       } else if ((m = h.match(/scalethroughautomation\.io\/preview\/([A-Za-z0-9]+)(#.*)?$/)) && OLD_PREVIEW[m[1]]) {
         var base = L[OLD_PREVIEW[m[1]]] || "";

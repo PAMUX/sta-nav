@@ -19,7 +19,7 @@
   window.__bufordFooterLoaded = true;
 
   /* ================= CONFIG ================= */
-  // Site address. Live site. The new home page sits at /home while the root still serves the old site.
+  // Site address. Live site. The home page is served at the root ("/").
   var SITE_URL = "https://bufordroofing.com";
   var SITE = {
     logo: "https://assets.cdn.filesafe.space/v8vGGqFshriKbi0nNLZt/media/6abc0fa917104c529a723029.png",
@@ -37,10 +37,10 @@
     social: {
       facebook: "https://facebook.com/bufordroofingandconstruction",
       yelp: "https://www.yelp.com/biz/buford-roofing-and-construction-grapevine-5",
-      nextdoor: "https://nextdoor.com/pages/buford-roofing-construction-grapevine-tx"
+      nextdoor: "https://nextdoor.com/pages/buford-roofing-compa-grapevine-tx/"
     },
     links: {
-      home: SITE_URL + "/home",
+      home: SITE_URL + "/",
       services: SITE_URL + "/services",
       about: SITE_URL + "/about-us",
       gallery: SITE_URL + "/gallery",
