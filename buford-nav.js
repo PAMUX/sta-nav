@@ -102,6 +102,9 @@
     ["About Us", "about"], ["Gallery", "gallery"], ["Recent Projects", "projects"],
     ["Careers", "careers"], ["Contact", "contact"]
   ];
+  /* Mobile drawer: About Us, Gallery and Contact are top-level (same as desktop); the rest sit under "More" */
+  var MOBILE_TOP = [["About Us", "about"], ["Gallery", "gallery"], ["Contact", "contact"]];
+  var MOBILE_MORE = [["Recent Projects", "projects"], ["Careers", "careers"]];
 
   /* ================= HELPERS ================= */
   function esc(s) {
@@ -187,6 +190,7 @@
     ".bnav-drawer a{display:block;padding:11px 0;color:#dfe8f4;font-weight:600;border-bottom:1px solid rgba(255,255,255,.08)}",
     ".bnav-drawer a:hover,.bnav-drawer a.is-active{color:#fff}",
     ".bnav-drawer .bnav-m-top{font-size:17px;font-weight:800;color:#fff;margin-top:18px}",
+    ".bnav-drawer .bnav-m-link{font-size:17px;font-weight:800;color:#fff;padding:13px 0}",
     ".bnav-drawer details{border-bottom:1px solid rgba(255,255,255,.08)}",
     ".bnav-drawer summary{list-style:none;cursor:pointer;padding:13px 0;font-weight:800;font-size:17px;color:#fff;display:flex;justify-content:space-between;align-items:center}",
     ".bnav-drawer summary::-webkit-details-marker{display:none}",
@@ -242,6 +246,12 @@
       return '<a href="' + url(x[1]) + '"' + (act.item === x[1] ? ' class="is-active" aria-current="page"' : "") + ">" + esc(x[0]) + "</a>";
     }).join("");
   }
+  function mobileTopLinks(list, act) {
+    return list.map(function (x) {
+      var on = act.top === x[1] || act.item === x[1];
+      return '<a class="bnav-m-link' + (on ? " is-active" : "") + '" href="' + url(x[1]) + '"' + (on ? ' aria-current="page"' : "") + ">" + esc(x[0]) + "</a>";
+    }).join("");
+  }
   function topLink(label, key, act) {
     return '<li><a class="bnav-link' + (act.top === key ? " is-active" : "") + '" href="' + url(key) + '"' + (act.top === key ? ' aria-current="page"' : "") + ">" + esc(label) + "</a></li>";
   }
@@ -286,7 +296,8 @@
         '<a class="bnav-m-top' + (act.top === "home" ? " is-active" : "") + '" href="' + url("home") + '">Home</a>' +
         '<details' + (act.top === "services" ? " open" : "") + '><summary>Services ' + ICON.chev + '</summary>' + plainLinks(SERVICES, act) + '<a href="' + url("services") + '">View All Services</a></details>' +
         '<details' + (act.top === "locations" ? " open" : "") + '><summary>Locations ' + ICON.chev + '</summary>' + plainLinks(LOCATIONS, act) + '</details>' +
-        '<details><summary>Company ' + ICON.chev + '</summary>' + plainLinks(COMPANY, act) + '</details>' +
+        mobileTopLinks(MOBILE_TOP, act) +
+        '<details><summary>More ' + ICON.chev + '</summary>' + plainLinks(MOBILE_MORE, act) + '</details>' +
         '<a class="bnav-btn" href="' + url("estimate") + '">' + esc(SITE.mobileCtaText) + '</a>' +
         '<a class="bnav-m-phone" href="' + esc(SITE.tel) + '">' + ICON.phone + esc(SITE.phone) + '</a>' +
       '</aside>';
