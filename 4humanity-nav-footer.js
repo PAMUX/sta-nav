@@ -72,8 +72,9 @@
   // (page key from ROUTES : menu key). Leave a page out for no highlight.
   var HIGHLIGHT = { category: "categories" };
 
-  // Extra CSS for the menu or footer, if a change ever needs it. Usually empty.
-  var EXTRA_CSS = "";
+  // Extra CSS for the menu or footer. The rules here keep a 7-item menu inside the
+  // screen on tablet and small laptop widths (smaller gaps, and no icons on tablets).
+  var EXTRA_CSS = "@media (min-width:768px) and (max-width:899px){nav [class~=\"md:flex\"]{gap:2px;padding-left:8px;padding-right:8px}nav [class~=\"md:flex\"]>a{padding-left:8px;padding-right:8px}nav [class~=\"md:flex\"]>a>svg{display:none}}@media (min-width:1024px) and (max-width:1151px){nav [class~=\"md:flex\"]{gap:4px}nav [class~=\"md:flex\"]>a{padding-left:10px;padding-right:10px}}";
 
   /* ================= 2. ICONS (the drawing inside each menu icon) ================= */
   var ICONS = {
@@ -202,7 +203,7 @@
   }
 
   // tells the page script that this file runs the menu
-  window.FH_NAV = { version: "2026-11-13", menu: MENU, routes: ROUTES };
+  window.FH_NAV = { version: "2026-11-13b", menu: MENU, routes: ROUTES };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
   else build();
 })();
