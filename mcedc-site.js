@@ -1,10 +1,10 @@
 /*!
- * MCEDC shared header + footer v1.1.0 (one file)
+ * MCEDC shared header + footer v1.2.0 (one file)
  * Mora County Economic Development Corporation
  *
  * Use on every page:
  *   <div data-mcedc-header data-active="About"></div>
- *   <script src="https://cdn.jsdelivr.net/gh/PAMUX/sta-nav@main/mcedc-site.js"></script>
+ *   <script src="https://pamux.github.io/sta-nav/mcedc-site.js"></script>
  *   ... page content ...
  *   <div data-mcedc-footer></div>
  *
@@ -12,10 +12,74 @@
  * The header renders where its placeholder is; the footer renders into
  * <div data-mcedc-footer></div> as soon as the page has loaded.
  * Site settings (menu links, phone, email, address) are in the SITE SETTINGS block below.
+ * Page links are live addresses ('/' for Home, '/about'). The LINKS block makes the same
+ * links work on local files and on the GHL preview address, on every link in the page.
  */
 (function () {
   if (window.__mcedcSiteLoaded) return;
   window.__mcedcSiteLoaded = true;
+
+/* ===================== LINKS =====================
+   Page links are written as live addresses: '/' for Home, '/about', '/events#news'.
+   This block turns them into the right address for where the page is open:
+     live site (moracountyedc.org/about)   ->  '/about'      Home -> '/'
+     local file (about.html in a folder)   ->  'about.html'  Home -> 'home.html'
+     GHL preview (/preview/<page id>)      ->  '/preview/<id of that page>'
+   Old-style links (about.html, index.html) are understood too, so a page that still
+   has them keeps working. If a page is added in GHL, add its name and page id below. */
+  var MC_PAGE_IDS = {
+    'home': 'ikM9Ec1QXNuUwLghyX04',
+    'about': 'jjzHsht4jbyQM9rNb9uN',
+    'board': '2OwXlRNbFNNlb8vpT9fj',
+    'classes': 'cL7eC1tCKMe2Au8QIFKK',
+    'contact': 'BCMnJGud1y4rIeUxVGh2',
+    'directory': 'AnkBY6M9kxN0d36QtiVi',
+    'donate': '7IoT3C8UJsQikATf8mun',
+    'events': 'GB1Y4VNcLvclWga8YpHi',
+    'grants': 'I1Qt35KwFalP09j7EYe3',
+    'living-in-mora': 'tgScPLNCa6ElF5aJZUBg',
+    'membership': 'Up7UdBSBCuYhLYlMmqxh',
+    'partner-application': 'KgSE97JluTGlTOejnJjP',
+    'sponsors': 'lY2flm3BGnjLczuLYxLn',
+    'starting-a-business': 'OlSb9CVKn2NEcCkeOn1Y',
+    'success-stories': 'VjFVBgWtix1puivdP3X0',
+    'sustainability': 'uhgLy3GK1w5dLtlVHfgR'
+  };
+  var MC_LINK_RE = new RegExp('^(?:\\./|/)?(index|' + Object.keys(MC_PAGE_IDS).sort(function (a, b) { return b.length - a.length; }).join('|') + ')?(?:\\.html?)?/?(#.*)?$', 'i');
+  var MC_MODE = (function () {
+    var p = location.pathname;
+    if (location.protocol === 'file:' || /\.html?$/i.test(p)) return 'local';
+    if (/^\/preview\/[A-Za-z0-9]+\/?$/.test(p)) return 'preview';
+    return 'live';
+  })();
+  function mcLink(href) {
+    if (!href || href.charAt(0) === '#') return href;
+    var m = MC_LINK_RE.exec(href);
+    if (!m) return href;
+    var page = (m[1] || 'home').toLowerCase(), frag = m[2] || '';
+    if (page === 'index') page = 'home';
+    if (MC_MODE === 'local') return page + '.html' + frag;
+    if (MC_MODE === 'preview') return MC_PAGE_IDS[page] ? '/preview/' + MC_PAGE_IDS[page] + frag : href;
+    return (page === 'home' ? '/' : '/' + page) + frag;
+  }
+  function mcFixLinks() {
+    var as = document.querySelectorAll('a[href]');
+    for (var i = 0; i < as.length; i++) {
+      var h = as[i].getAttribute('href'), n = mcLink(h);
+      if (n !== h) as[i].setAttribute('href', n);
+    }
+  }
+  window.MCEDC_LINK = mcLink;
+  /* every link in the page: fix now, when the page has loaded, and as a last check on click */
+  mcFixLinks();
+  document.addEventListener('DOMContentLoaded', mcFixLinks);
+  window.addEventListener('load', mcFixLinks);
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a) return;
+    var h = a.getAttribute('href'), n = mcLink(h);
+    if (n !== h) a.setAttribute('href', n);
+  }, true);
 
 /* ===================== HEADER ===================== */
 /*!
@@ -34,48 +98,48 @@
   'use strict';
 
   /* ================= SITE SETTINGS =================
-     Edit these once and every page updates. When the pages move to GHL or WordPress,
-     change the links to your page addresses (for example '/about' instead of 'about.html').
+     Edit these once and every page updates. Links are the live page addresses:
+     '/' is Home, '/about' is the about page, '/events#news' is a section on a page.
      mcedc-footer.js reads the same settings, so there is nothing to change there. */
   var CONFIG = {
-    home: 'index.html',
+    home: '/',
     logo: 'https://assets.cdn.filesafe.space/tWoxbvtjMGP2F9AtZotx/media/6ab446dc25d854bb6501bd90.webp',
     logoAlt: 'Mora County Economic Development Corporation',
-    donate: 'donate.html',
+    donate: '/donate',
     menu: [
-      { label: 'Home', href: 'index.html' },
+      { label: 'Home', href: '/' },
       { label: 'Events', items: [
-        ['Events Calendar', 'events.html'],
-        ['News & Announcements', 'events.html#news'] ] },
+        ['Events Calendar', '/events'],
+        ['News & Announcements', '/events#news'] ] },
       { label: 'About', items: [
-        ['About MCEDC', 'about.html'],
-        ['Board & Leadership', 'board.html'],
-        ['Sponsors & Partners', 'sponsors.html'],
-        ['Mora Sustainability Initiative', 'sustainability.html'] ] },
+        ['About MCEDC', '/about'],
+        ['Board & Leadership', '/board'],
+        ['Sponsors & Partners', '/sponsors'],
+        ['Mora Sustainability Initiative', '/sustainability'] ] },
       { label: 'Living in Mora', items: [
-        ['Community Stories', 'living-in-mora.html#stories'],
-        ['Photos & Video', 'living-in-mora.html#photos'],
-        ['Quality of Life', 'living-in-mora.html#quality'] ] },
+        ['Community Stories', '/living-in-mora#stories'],
+        ['Photos & Video', '/living-in-mora#photos'],
+        ['Quality of Life', '/living-in-mora#quality'] ] },
       { label: 'Business & Community', items: [
-        ['Local Business Directory', 'directory.html'],
-        ['Starting a Business in Mora', 'starting-a-business.html'],
-        ['Grants & Incentives', 'grants.html'],
-        ['Classes & Workforce Training', 'classes.html'],
-        ['Success Stories', 'success-stories.html'] ] },
+        ['Local Business Directory', '/directory'],
+        ['Starting a Business in Mora', '/starting-a-business'],
+        ['Grants & Incentives', '/grants'],
+        ['Classes & Workforce Training', '/classes'],
+        ['Success Stories', '/success-stories'] ] },
       { label: 'Get Involved', items: [
-        ['Membership', 'membership.html'],
-        ['Donate', 'donate.html'],
-        ['Partner Application', 'partner-application.html'],
-        ['Contact', 'contact.html'] ] }
+        ['Membership', '/membership'],
+        ['Donate', '/donate'],
+        ['Partner Application', '/partner-application'],
+        ['Contact', '/contact'] ] }
     ],
     footerLinks: [
-      ['About', 'about.html'],
-      ['Events', 'events.html'],
-      ['Business Directory', 'directory.html'],
-      ['Business Resources', 'starting-a-business.html'],
-      ['Living in Mora', 'living-in-mora.html'],
-      ['Membership', 'membership.html'],
-      ['Contact', 'contact.html']
+      ['About', '/about'],
+      ['Events', '/events'],
+      ['Business Directory', '/directory'],
+      ['Business Resources', '/starting-a-business'],
+      ['Living in Mora', '/living-in-mora'],
+      ['Membership', '/membership'],
+      ['Contact', '/contact']
     ],
     tagline: 'Building a stronger, more sustainable Mora County through community, collaboration, and opportunity.',
     address: ['PO Box 171', 'Mora, NM 87732'],
@@ -119,13 +183,13 @@
   var forced = host ? (host.getAttribute('data-active') || '') : '';
   var here = path(location.href), hereHash = location.hash;
 
-  function isHere(href) { return path(href.split('#')[0]) === here; }
+  function isHere(href) { return path(mcLink(href).split('#')[0]) === here; }
 
   /* ---------- markup ---------- */
   var items = C.menu.map(function (m) {
     if (!m.items) {
       var on = forced ? forced === m.label : isHere(m.href);
-      return '<li class="mc-nav__item"><a href="' + esc(m.href) + '" class="mc-nav__link' + (on ? ' is-active' : '') + '"' + (on ? ' aria-current="page"' : '') + '>' + esc(m.label) + '</a></li>';
+      return '<li class="mc-nav__item"><a href="' + esc(mcLink(m.href)) + '" class="mc-nav__link' + (on ? ' is-active' : '') + '"' + (on ? ' aria-current="page"' : '') + '>' + esc(m.label) + '</a></li>';
     }
     var any = false, currentMarked = false;
     var links = m.items.map(function (it) {
@@ -135,7 +199,7 @@
         if (!h || h === hereHash) { cur = true; currentMarked = true; }
         any = true;
       }
-      return '<li><a href="' + esc(it[1]) + '"' + (cur ? ' aria-current="page"' : '') + '>' + esc(it[0]) + '</a></li>';
+      return '<li><a href="' + esc(mcLink(it[1])) + '"' + (cur ? ' aria-current="page"' : '') + '>' + esc(it[0]) + '</a></li>';
     }).join('');
     var on2 = forced ? forced === m.label : any;
     return '<li class="mc-nav__item mc-has-drop"><button type="button" class="mc-nav__link' + (on2 ? ' is-active' : '') + '" aria-expanded="false">' + esc(m.label) + ' ' + CHEV + '</button><ul class="mc-dropdown">' + links + '</ul></li>';
@@ -144,9 +208,9 @@
   var html =
     '<header class="mc-header" id="mcHeader">' +
       '<div class="mc-container mc-header__inner">' +
-        '<a href="' + esc(C.home) + '" class="mc-logo" aria-label="Mora County Economic Development home"><span class="mc-logo__crop"><img src="' + esc(C.logo) + '" alt="' + esc(C.logoAlt) + '" width="500" height="380"></span></a>' +
+        '<a href="' + esc(mcLink(C.home)) + '" class="mc-logo" aria-label="Mora County Economic Development home"><span class="mc-logo__crop"><img src="' + esc(C.logo) + '" alt="' + esc(C.logoAlt) + '" width="500" height="380"></span></a>' +
         '<nav class="mc-nav" id="mcNav" aria-label="Main"><ul class="mc-nav__list">' + items + '</ul>' +
-          '<a href="' + esc(C.donate) + '" class="mc-donate">Donate</a></nav>' +
+          '<a href="' + esc(mcLink(C.donate)) + '" class="mc-donate">Donate</a></nav>' +
         '<button type="button" class="mc-burger" id="mcBurger" aria-label="Open menu" aria-expanded="false" aria-controls="mcNav"><span></span></button>' +
       '</div>' +
     '</header>' +
@@ -205,8 +269,8 @@
 
   /* settings come from mcedc-header.js; these are only used if that file is missing */
   var C = window.MCEDC_CONFIG || {
-    home: 'index.html', logo: 'https://assets.cdn.filesafe.space/tWoxbvtjMGP2F9AtZotx/media/6ab446dc25d854bb6501bd90.webp', logoAlt: 'Mora County Economic Development Corporation',
-    footerLinks: [['About', 'about.html'], ['Events', 'events.html'], ['Business Directory', 'directory.html'], ['Contact', 'contact.html']],
+    home: '/', logo: 'https://assets.cdn.filesafe.space/tWoxbvtjMGP2F9AtZotx/media/6ab446dc25d854bb6501bd90.webp', logoAlt: 'Mora County Economic Development Corporation',
+    footerLinks: [['About', '/about'], ['Events', '/events'], ['Business Directory', '/directory'], ['Contact', '/contact']],
     tagline: 'Building a stronger, more sustainable Mora County through community, collaboration, and opportunity.',
     address: ['PO Box 171', 'Mora, NM 87732'], phone: '(505) 718-5140', tel: '+15057185140', email: 'juliarogers215@gmail.com',
     social: {}, privacy: '#', terms: '#', newsletterEndpoint: ''
@@ -228,7 +292,7 @@
   var social = Object.keys(names).filter(function (k) { return C.social && C.social[k]; }).map(function (k) {
     return '<a href="' + esc(C.social[k]) + '" aria-label="' + names[k] + '" target="_blank" rel="noopener">' + ICON[k] + '</a>';
   }).join('');
-  var links = C.footerLinks.map(function (l) { return '<li><a href="' + esc(l[1]) + '">' + esc(l[0]) + '</a></li>'; }).join('');
+  var links = C.footerLinks.map(function (l) { return '<li><a href="' + esc(mcLink(l[1])) + '">' + esc(l[0]) + '</a></li>'; }).join('');
   var year = new Date().getFullYear();
 
   var html =
@@ -236,7 +300,7 @@
       '<div class="mc-container">' +
         '<div class="mc-footer__grid">' +
           '<div class="mc-footer__about">' +
-            '<a href="' + esc(C.home) + '" class="mc-logo mc-footer__logo" aria-label="Mora County Economic Development home"><span class="mc-logo__crop"><img src="' + esc(C.logo) + '" alt="' + esc(C.logoAlt) + '" width="500" height="380" loading="lazy"></span></a>' +
+            '<a href="' + esc(mcLink(C.home)) + '" class="mc-logo mc-footer__logo" aria-label="Mora County Economic Development home"><span class="mc-logo__crop"><img src="' + esc(C.logo) + '" alt="' + esc(C.logoAlt) + '" width="500" height="380" loading="lazy"></span></a>' +
             '<p>' + esc(C.tagline) + '</p>' +
             (social ? '<div class="mc-social">' + social + '</div>' : '') +
           '</div>' +
